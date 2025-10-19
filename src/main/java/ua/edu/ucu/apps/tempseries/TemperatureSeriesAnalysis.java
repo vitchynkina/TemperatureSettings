@@ -1,6 +1,5 @@
 package ua.edu.ucu.apps.tempseries;
 
-import java.security.DrbgParameters.Capability;
 import java.util.Arrays;
 import java.util.InputMismatchException;
 
@@ -26,8 +25,15 @@ public class TemperatureSeriesAnalysis {
                     throw new InputMismatchException("Low temperature");
                 }
             }
-            this.data = new double[Math.max(CAPACITY, temperatureSeries.length)];
-            System.arraycopy(temperatureSeries, 0, this.data, 0, temperatureSeries.length);
+            this.data =
+                new double[Math.max(CAPACITY, temperatureSeries.length)];
+            System.arraycopy(
+                temperatureSeries,
+                0,
+                this.data,
+                0,
+                temperatureSeries.length
+            );
             this.size = temperatureSeries.length;
         }
     }
@@ -47,7 +53,7 @@ public class TemperatureSeriesAnalysis {
         double sumSqaures = 0.0;
 
         for (int i = 0; i < size; i++) {
-            sumSqaures += Math.pow(data[i] - aver, 2);
+            sumSqaures += (data[i] - aver) * (data[i] - aver);
         }
         return Math.pow(sumSqaures/size, 0.5);
     }
@@ -114,7 +120,7 @@ public class TemperatureSeriesAnalysis {
         for (int i = 0; i < size; i++) {
             if (data[i] < tempValue) {
                 lessValues[lessSize] = data[i];
-                lessSize ++;
+                lessSize++;
             }
         }
         return Arrays.copyOf(lessValues, lessSize);
@@ -139,7 +145,7 @@ public class TemperatureSeriesAnalysis {
         for (int i = 0; i < size; i++) {
             if (data[i] >= lowerBound && data[i] <= upperBound) {
                 suitableTemps[arrSize] = data[i];
-                arrSize ++;
+                arrSize++;
             }
         }
         return suitableTemps;

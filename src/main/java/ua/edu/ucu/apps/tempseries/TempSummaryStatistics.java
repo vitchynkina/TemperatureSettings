@@ -4,8 +4,8 @@ import lombok.Value;
 
 @Value
 public class TempSummaryStatistics {
-    double avgTemp;
-    double devTemp;
-    double minTemp;
-    double maxTemp;
+    private double avgTemp;
+    private double devTemp;
+    private double minTemp;
+    private double maxTemp;
 }
