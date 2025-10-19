@@ -3,40 +3,46 @@ name: Measure code coverage
 on:
   push:
     branches: [ "main" ]
+  pull_request:
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      checks: write
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Set up JDK 17
-        timeout-minutes: 30
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
           cache: maven
 
-      - name: Build and Test
-        if: always()
-        run: mvn -B package --file pom.xml                 
-        continue-on-error: true    
+      - name: Build & Test with JaCoCo report
+        run: |
+          mvn -B -q clean test jacoco:report
+          ls -la target/site/jacoco
 
       - name: Upload Report
-        uses: 'actions/upload-artifact@v4'
+        uses: actions/upload-artifact@v4
         with:
           name: jacoco-report
           path: |
-            ${{ github.workspace }}/target/site/jacoco/jacoco.xml
-            ${{ github.workspace }}/target/site/jacoco/index.html
-       
+            target/site/jacoco/jacoco.xml
+            target/site/jacoco/index.html
+          if-no-files-found: error
+
       - name: Add coverage to PR
-        id: jacoco
+        if: ${{ github.event_name == 'pull_request' }}
         uses: madrapps/jacoco-report@v1.6.1
         with:
-          paths: ${{ github.workspace }}/target/site/jacoco/jacoco.xml
+          paths: target/site/jacoco/jacoco.xml
           token: ${{ secrets.GITHUB_TOKEN }}
           min-coverage-overall: 80
           min-coverage-changed-files: 60
